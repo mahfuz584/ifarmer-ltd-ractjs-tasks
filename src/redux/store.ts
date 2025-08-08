@@ -1,10 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
-import messageReducer from "./features/slices/test";
+import ticTacToeSlice from "./features/slices/ticTacToeSlice";
 
 export const store = () => {
   return configureStore({
     reducer: {
-      message: messageReducer,
+      ticTacToe: ticTacToeSlice,
     },
   });
 };
