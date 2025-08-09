@@ -1,4 +1,3 @@
-import PersistGameState from "@/components/global/PersistGameState";
 import ReduxProvider from "@/redux/ReduxProvider";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
@@ -31,7 +30,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased flex flex-col min-h-screen`}
       >
         <ReduxProvider>
-          <PersistGameState />
           <Navbar />
           <main className="flex-grow container mx-auto px-4">{children}</main>
         </ReduxProvider>

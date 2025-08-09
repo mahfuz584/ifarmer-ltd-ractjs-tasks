@@ -6,7 +6,6 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-// utils/localStorage.ts
 export const saveGameState = (state: GameState) => {
   try {
     const serializedState = JSON.stringify(state);

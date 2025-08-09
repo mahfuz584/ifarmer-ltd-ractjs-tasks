@@ -1,7 +1,7 @@
 import GameBoard from "./_components/GameBoard";
 
-const page = () => {
+const GameBoardPage = () => {
   return <GameBoard />;
 };
 
-export default page;
+export default GameBoardPage;

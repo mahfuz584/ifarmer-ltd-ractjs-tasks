@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import {
   finishRound,
   resetBoard,
+  resetMatch,
   switchTurn,
   updateCell,
 } from "@/redux/features/slices/ticTacToeSlice";
@@ -16,9 +17,8 @@ import { useRouter } from "next/navigation";
 const GameBoard = () => {
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const { board, currentTurn, players, round, status } = useAppSelector(
-    (state) => state.ticTacToe
-  );
+  const { board, currentTurn, players, round, status, winnerId } =
+    useAppSelector((state) => state.ticTacToe);
 
   const currentPlayerIndex = players.findIndex((p) => p.id === currentTurn);
   const currentPlayerName = players[currentPlayerIndex]?.name || "";
@@ -47,6 +47,57 @@ const GameBoard = () => {
     dispatch(resetBoard());
   };
 
+  const handleRestartMatch = () => {
+    dispatch(resetMatch());
+  };
+
+  const handleNewMatch = () => {
+    router.push("/");
+  };
+
+  if (status === "matchFinished") {
+    const finalWinner = players.find((p) => p.id === winnerId);
+
+    return (
+      <div className="flex flex-col items-center justify-center h-full p-6 gap-6">
+        <h2 className="text-3xl font-bold text-green-700 text-center">
+          {finalWinner
+            ? `🏆 ${finalWinner.name} wins the match!`
+            : "🤝 The match ended in a draw!"}
+        </h2>
+
+        <div className="w-full max-w-md">
+          <h3 className="text-xl font-semibold mb-4 text-center">
+            Final Scores
+          </h3>
+          {players.map((player) => (
+            <div
+              key={player.id}
+              className="flex justify-between mb-2 text-lg font-medium text-green-800 border-b border-green-200 pb-1"
+            >
+              <span>{player.name}</span>
+              <span>{player.score}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex gap-4 mt-6">
+          <Button
+            className="bg-green-600 hover:bg-green-700 text-white font-semibold"
+            onClick={handleRestartMatch}
+          >
+            Restart Match
+          </Button>
+          <Button
+            className="bg-red-600 hover:bg-red-700 text-white font-semibold"
+            onClick={handleNewMatch}
+          >
+            New Match
+          </Button>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col items-center h-full p-4 gap-12">
       <Card className="border-green-300 shadow-md flex flex-col justify-between w-full">
