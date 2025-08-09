@@ -10,7 +10,6 @@ const nextConfig: NextConfig = {
     ],
   },
   experimental: {
-    cacheComponents: true,
     useCache: true,
   },
 };
