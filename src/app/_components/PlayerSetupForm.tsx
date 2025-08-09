@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-
 import { setGameState } from "@/redux/features/slices/ticTacToeSlice";
 import { useAppDispatch } from "@/redux/hooks";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,8 +31,6 @@ const PlayerSetupForm = () => {
   const isDisabled = !watchFields?.[0] || !watchFields?.[1];
 
   const onSubmit = (data: PlayerFormInputs) => {
-    console.log("Form submitted with data:", data);
-
     const playersInfo = [
       {
         id: data.player1.toLowerCase().replace(/\s+/g, "-") + Date.now() + "-1",
@@ -53,14 +50,15 @@ const PlayerSetupForm = () => {
       currentTurn: playersInfo[0].id,
       round: 1,
       board: Array(3)
-        .fill(null)
-        .map(() => Array(3).fill(null)),
+        .fill("")
+        .map(() => Array(3).fill("")),
       status: "playing" as const,
+      maxRounds: 5,
+      winnerId: null,
     };
 
     dispatch(setGameState(initialGameValue));
-
-    router.push("/assignment-2");
+    router.push("/assignment-1");
   };
 
   return (

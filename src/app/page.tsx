@@ -1,11 +1,7 @@
 import PlayerSetupForm from "./_components/PlayerSetupForm";
 
 const HomePage = () => {
-  return (
-    <>
-      <PlayerSetupForm />
-    </>
-  );
+  return <PlayerSetupForm />;
 };
 
 export default HomePage;

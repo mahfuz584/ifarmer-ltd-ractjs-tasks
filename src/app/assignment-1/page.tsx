@@ -1,5 +1,7 @@
+import GameBoard from "./_components/GameBoard";
+
 const page = () => {
-  return <div>page</div>;
+  return <GameBoard />;
 };
 
 export default page;
