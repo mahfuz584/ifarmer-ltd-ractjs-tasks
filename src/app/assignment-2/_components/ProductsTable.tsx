@@ -9,25 +9,52 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Pencil, TrashIcon } from "lucide-react";
+import { Eye, Pencil, TrashIcon } from "lucide-react";
 import Image from "next/image";
-import { ProductListResponse } from "./types";
+import Link from "next/link";
+import { useState } from "react";
+import { Category, ProductListResponse } from "./types";
 
-export function ProductTable({ products }: { products: ProductListResponse }) {
+import { useDeleteProductMutation } from "@/redux/query/productsQuery";
+import UpdateProductDialogForm from "./UpdateProductDialogForm";
+
+export function ProductTable({
+  products,
+  categories,
+}: {
+  products: ProductListResponse;
+  categories: Category[];
+}) {
+  const [editingProductId, setEditingProductId] = useState<number | null>(null);
+
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+
+  const handleClickDelete = async (id: number) => {
+    if (confirm("Are you sure you want to delete this product?")) {
+      const response = await deleteProduct(id);
+
+      if (response.error) {
+        alert("Failed to delete product");
+      }
+
+      alert("Product deleted successfully");
+    }
+  };
+
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead className="text-center">Image</TableHead>
-          <TableHead className="text-center">Title</TableHead>
-          <TableHead className="text-center">Price</TableHead>
-          <TableHead className="text-center">Category</TableHead>
-          <TableHead className="text-center">Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody className="text-center">
-        {products.map((product) => {
-          return (
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="text-center">Image</TableHead>
+            <TableHead className="text-center">Title</TableHead>
+            <TableHead className="text-center">Price</TableHead>
+            <TableHead className="text-center">Category</TableHead>
+            <TableHead className="text-center">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody className="text-center">
+          {products.map((product) => (
             <TableRow key={product.id} className="hover:bg-muted">
               <TableCell className="relative w-20 h-10">
                 <Image
@@ -43,23 +70,44 @@ export function ProductTable({ products }: { products: ProductListResponse }) {
               <TableCell>${product.price}</TableCell>
               <TableCell>{product.category.name}</TableCell>
               <TableCell className="flex items-center justify-center gap-2 mt-3">
+                <Link href={`/assignment-2/${product.id}`} passHref>
+                  <Button
+                    aria-label={`View ${product.title}`}
+                    className="text-blue-600 hover:text-blue-800 bg-blue-100 hover:bg-blue-200 cursor-pointer"
+                  >
+                    <Eye className="h-5 w-5" />
+                  </Button>
+                </Link>
+
                 <Button
                   aria-label={`Edit ${product.title}`}
-                  className="text-green-600 hover:text-green-800 bg-green-100 hover:bg-green-200"
+                  onClick={() => setEditingProductId(product.id)}
+                  className="text-green-600 hover:text-green-800 bg-green-100 hover:bg-green-200 cursor-pointer"
                 >
                   <Pencil className="h-5 w-5" />
                 </Button>
+
                 <Button
                   aria-label={`Delete ${product.title}`}
-                  className="text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200"
+                  disabled={isDeleting}
+                  onClick={() => handleClickDelete(product.id)}
+                  className="text-red-600 hover:text-red-800 bg-red-100 hover:bg-red-200 cursor-pointer"
                 >
                   <TrashIcon className="h-5 w-5" />
                 </Button>
               </TableCell>
             </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+          ))}
+        </TableBody>
+      </Table>
+      {editingProductId && (
+        <UpdateProductDialogForm
+          categories={categories}
+          products={products}
+          productId={editingProductId}
+          onClose={() => setEditingProductId(null)}
+        />
+      )}
+    </>
   );
 }

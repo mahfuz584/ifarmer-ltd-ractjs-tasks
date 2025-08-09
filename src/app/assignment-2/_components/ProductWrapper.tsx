@@ -1,5 +1,5 @@
 import Products from "./Products";
-import { fetchProducts, fetchTotalLength } from "./utils";
+import { fetchCategories, fetchProducts, fetchTotalLength } from "./utils";
 
 const ProductWrapper = async ({
   searchParams,
@@ -8,11 +8,19 @@ const ProductWrapper = async ({
 }) => {
   const { offset, limit } = await searchParams;
   const { totalLength } = await fetchTotalLength();
+  const { data: categories } = await fetchCategories();
   const { data, error } = await fetchProducts(offset, limit);
 
-  if (!data || error) return null;
+  if (!data || error || totalLength < 1 || !categories) return null;
 
-  return <Products products={data} totalLength={totalLength} />;
+  if (!data || error || totalLength < 1 || !categories) return null;
+  return (
+    <Products
+      products={data}
+      totalLength={totalLength}
+      categories={categories}
+    />
+  );
 };
 
 export default ProductWrapper;

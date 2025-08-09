@@ -1,5 +1,5 @@
 export type Category = {
-  id: number;
+  id: string;
   name: string;
   image: string;
   slug: string;
@@ -24,4 +24,11 @@ export type TotalLengthResponse = {
 export type PaginationProps = {
   totalItems: number;
   defaultLimit: number;
+};
+
+export type UpdateDialogBoxProps = {
+  products: ProductListResponse;
+  categories: Category[];
+  productId: number;
+  onClose: () => void;
 };

@@ -1,22 +1,26 @@
-"use client";
-
+import ProductDialogForm from "./DialogBox";
 import Pagination from "./Pagination";
 import { ProductTable } from "./ProductsTable";
-import { ProductListResponse } from "./types";
+import { Category, ProductListResponse } from "./types";
 
 const DEFAULT_LIMIT = 10;
 
-export default function Products({
+const Products = ({
   products,
+  categories,
   totalLength,
 }: {
   totalLength: number;
   products: ProductListResponse;
-}) {
+  categories: Category[];
+}) => {
   return (
     <>
-      <ProductTable products={products} />
+      <ProductDialogForm categories={categories} />
+      <ProductTable products={products} categories={categories} />
       <Pagination defaultLimit={DEFAULT_LIMIT} totalItems={totalLength} />
     </>
   );
-}
+};
+
+export default Products;

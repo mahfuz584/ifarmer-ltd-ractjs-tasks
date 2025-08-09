@@ -1,11 +1,23 @@
 import { API_BASE_URL } from "@/lib/baseUrls";
-import { ProductListResponse, TotalLengthResponse } from "./types";
+import {
+  unstable_cacheLife as cacheLife,
+  unstable_cacheTag as cacheTag,
+} from "next/cache";
+import {
+  Category,
+  Product,
+  ProductListResponse,
+  TotalLengthResponse,
+} from "./types";
 
 export async function fetchPublic<T, E = unknown>(
   url: string,
   params?: Record<string, string | number | boolean>,
   init?: RequestInit
 ) {
+  "use cache";
+  cacheLife("minutes");
+
   const fullUrl = new URL(`${API_BASE_URL}${url}`);
 
   if (params) {
@@ -38,14 +50,43 @@ export const fetchProducts = async (
   offset: string = "0",
   limit: string = "10"
 ): Promise<{ data: ProductListResponse | null; error: Error | null }> => {
+  "use cache";
+  cacheLife("days");
+  cacheTag("products");
+
   return fetchPublic<ProductListResponse, Error>("/products", {
     offset,
     limit,
   });
 };
 
+export const fetchCategories = async (): Promise<{
+  data: Category[] | null;
+  error: Error | null;
+}> => {
+  "use cache";
+  cacheLife("days");
+  cacheTag("products");
+
+  return fetchPublic<Category[], Error>("/categories");
+};
+
+export const fetchProductById = async (
+  id: string
+): Promise<{ data: Product | null; error: Error | null }> => {
+  "use cache";
+  cacheLife("days");
+  cacheTag("products");
+
+  return fetchPublic<Product, Error>(`/products/${id}`);
+};
+
 export const fetchTotalLength = async (): Promise<TotalLengthResponse> => {
-  const response = await fetch(`${API_BASE_URL}/products?offset=0&limit=1000`);
+  "use cache";
+  cacheLife("days");
+  cacheTag("products");
+
+  const response = await fetch(`${API_BASE_URL}/products`);
   const data = await response.json();
 
   const length = Array.isArray(data) ? data.length : 0;
