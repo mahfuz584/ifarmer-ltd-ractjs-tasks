@@ -1,16 +1,22 @@
+import { loadGameState, saveGameState } from "@/lib/utils";
 import { configureStore } from "@reduxjs/toolkit";
-import messageReducer from "./features/slices/test";
+import ticTacToeSlice from "./features/slices/ticTacToeSlice";
 
-export const store = () => {
-  return configureStore({
-    reducer: {
-      message: messageReducer,
-    },
-  });
-};
+const preloadedState = loadGameState();
 
-// Infer the type of store
-export type AppStore = ReturnType<typeof store>;
-// Infer the `RootState` and `AppDispatch` types from the store itself
+export const store = configureStore({
+  reducer: {
+    ticTacToe: ticTacToeSlice,
+  },
+  ...(preloadedState !== undefined && {
+    preloadedState: { ticTacToe: preloadedState },
+  }),
+});
+
+store.subscribe(() => {
+  saveGameState(store.getState().ticTacToe);
+});
+
+export type AppStore = typeof store;
 export type RootState = ReturnType<AppStore["getState"]>;
 export type AppDispatch = AppStore["dispatch"];
