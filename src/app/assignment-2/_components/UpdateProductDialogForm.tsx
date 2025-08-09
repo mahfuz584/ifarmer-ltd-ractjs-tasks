@@ -24,6 +24,9 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useUpdateProductMutation } from "@/redux/query/productsQuery";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { revalidateTags } from "@/actions";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { productFormInputs } from "./constants";
 import { ProductFormInputs, productSchema } from "./schema";
@@ -35,6 +38,7 @@ const UpdateProductDialogForm = ({
   products,
   categories,
 }: UpdateDialogBoxProps) => {
+  const router = useRouter();
   const matchProduct = products.find((product) => product.id === productId);
   const {
     control,
@@ -55,12 +59,15 @@ const UpdateProductDialogForm = ({
 
   const onSubmit = async (data: ProductFormInputs) => {
     const response = await updateProduct({ id: productId, data });
-    if ("error" in response) {
+
+    if (response.error && "data" in response.error) {
       alert("Error updating product");
-    } else {
-      onClose();
-      alert("Product updated successfully");
     }
+
+    onClose();
+    router.refresh();
+    revalidateTags(["products"]);
+    alert("Product updated successfully");
   };
 
   return (

@@ -15,7 +15,9 @@ import Link from "next/link";
 import { useState } from "react";
 import { Category, ProductListResponse } from "./types";
 
+import { revalidateTags } from "@/actions";
 import { useDeleteProductMutation } from "@/redux/query/productsQuery";
+import { useRouter } from "next/navigation";
 import UpdateProductDialogForm from "./UpdateProductDialogForm";
 
 export function ProductTable({
@@ -25,6 +27,7 @@ export function ProductTable({
   products: ProductListResponse;
   categories: Category[];
 }) {
+  const router = useRouter();
   const [editingProductId, setEditingProductId] = useState<number | null>(null);
 
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
@@ -33,11 +36,13 @@ export function ProductTable({
     if (confirm("Are you sure you want to delete this product?")) {
       const response = await deleteProduct(id);
 
-      if (response.error) {
+      if (response.error && "data" in response.error) {
         alert("Failed to delete product");
       }
 
       alert("Product deleted successfully");
+      revalidateTags(["products"]);
+      router.refresh();
     }
   };
 

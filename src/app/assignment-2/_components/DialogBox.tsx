@@ -25,12 +25,16 @@ import {
 } from "@/components/ui/select";
 import { useCreateProductMutation } from "@/redux/query/productsQuery";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import { revalidateTags } from "@/actions";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 import { productFormInputs } from "./constants";
 import { ProductFormInputs, productSchema } from "./schema";
 import { Category } from "./types";
 
 const ProductDialogForm = ({ categories }: { categories: Category[] }) => {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const {
@@ -57,10 +61,12 @@ const ProductDialogForm = ({ categories }: { categories: Category[] }) => {
 
     if (response.error && "data" in response.error) {
       alert("Error creating product");
-    } else {
-      alert("Product created successfully");
-      setOpen(false);
     }
+
+    alert("Product created successfully");
+    revalidateTags(["products"]);
+    router.refresh();
+    setOpen(false);
   };
 
   return (

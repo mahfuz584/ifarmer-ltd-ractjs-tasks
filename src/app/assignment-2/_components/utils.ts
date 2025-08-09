@@ -15,9 +15,6 @@ export async function fetchPublic<T, E = unknown>(
   params?: Record<string, string | number | boolean>,
   init?: RequestInit
 ) {
-  "use cache";
-  cacheLife("minutes");
-
   const fullUrl = new URL(`${API_BASE_URL}${url}`);
 
   if (params) {
